@@ -15,8 +15,8 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'email', 'password',
+    protected $guarded = [
+        'id'//, 'email', 'password',
     ];
 
     /**
@@ -36,4 +36,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function state()
+    {
+        return $this->belongsTo('App\State')->select('id', 'state');
+    }
+    public function local_govt()
+    {
+        return $this->belongsTo('App\LocalGovt')->select('id', 'name');
+    }
 }
