@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\User;
 use App\State;
 use App\UserCriminalCase;
 use Illuminate\Http\Request;
 use Validator, Redirect;
 
-class UserController extends Controller
+class UserCriminalCaseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('state', 'local_govt')->paginate(20);
-        return view('user.index')->with(['users' => $users]);
+        return view('case.index')->with(['users' => $users]);
     }
 
     /**
@@ -25,9 +26,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(int $user_id)
     {
-        return view('user.create')->with(['states' => State::select('id', 'state')->get()]);
+
+        return view('case.create')->with(['user' => User::findOrFail($user_id) ,'states' => State::select('id', 'state')->get()]);
     }
 
     /**
@@ -36,17 +38,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, int $user_id)
     {
         $data = $request->all();
         $validator = Validator::make($data, [
-            'first_name'             => 'required',
-            'last_name'             => 'required',
-            'phone_number'             => 'required',
-            'age'             => 'required',
-            'gender'             => 'required',
+            'title'             => 'required',
+            'description'             => 'required',
             'state_id'             => 'required',
             'local_govt_id'             => 'required',
+            'type'             => 'required',
         ]);
 
     // check if the validator failed -----------------------
@@ -60,20 +60,12 @@ class UserController extends Controller
                 ->withErrors($validator);
 
         }
-
-        $data['password'] = bcrypt(rand(0000,9999));
-        if($request->has('image'))
-        {
-            $imageName = time().'.'.request()->image->getClientOriginalExtension();
-  
-            request()->image->move(public_path('images'), $imageName);
-            $data['image'] = $imageName;
-        }
+        $data['user_id'] = $user_id;
         if(self::save($data))
         {
-            return redirect('user')->with('success', 'User data addedd successfully');
+            return redirect('user/'.$user_id)->with('success', 'Criminal case data added successfully');
         }
-        return $store;
+        return;
     }
 
     /**
@@ -85,7 +77,7 @@ class UserController extends Controller
      */
     public static function save($data)
     {
-        $store = User::create($data);
+        $store = UserCriminalCase::create($data);
         return $store;
     }
     /**
@@ -94,9 +86,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id, $id)
     {
-        return view('user.show')->with(['user' => User::findOrFail($id), "cases" => UserCriminalCase::where('user_id', $id)->get()]);
+        return view('case.show')->with(['user' => User::findOrFail($user_id), "case" => UserCriminalCase::findOrFail($id)]);
     }
 
     /**
@@ -105,9 +97,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($user_id, $id)
     {
-        return view('user.edit')->with(['user' => User::findOrFail($id), 'states' => State::all()]);
+        return view('case.edit')->with(['user' => User::findOrFail($id), 'case' => UserCriminalCase::findOrFail($id),'states' => State::all()]);
     }
 
     /**
@@ -120,36 +112,25 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->all();
-        $update = User::findOrFail($id);
-        if(!empty($data['first_name'])){
-            $update->first_name = $data['first_name'];
-        }
-        if(!empty($data['last_name'])){
-            $update->last_name = $data['last_name'];
-        }
-        if(!empty($data['middle_name'])){
-            $update->middle_name = $data['middle_name'];
-        }
-        if(!empty($data['gender'])){
-            $update->gender = $data['gender'];
-        }
-        if(!empty($data['age'])){
-            $update->age = $data['age'];
-        }
-        if(!empty($data['phone_number'])){
-            $update->phone_number = $data['phone_number'];
-        }
+        $update = UserCriminalCase::findOrFail($id);
+        
         if(!empty($data['state_id'])){
             $update->state_id = $data['state_id'];
         }
         if(!empty($data['local_govt_id'])){
             $update->local_govt_id = $data['local_govt_id'];
         }
-        if(!empty($data['address'])){
-            $update->address = $data['address'];
+        if(!empty($data['title'])){
+            $update->title = $data['title'];
+        }
+        if(!empty($data['type'])){
+            $update->type = $data['type'];
+        }
+        if(!empty($data['description'])){
+            $update->description = $data['description'];
         }
         $update->save();
-        return redirect('user')->with('success', 'User data updated successfully');
+        return redirect('user/'.$update->user_id)->with('success', 'User criminal data updated successfully');
 
     }
 
@@ -161,9 +142,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        if(User::destroy($id))
+        if(UserCriminalCase::destroy($id))
         {
-            return redirect('user')->with('success', 'User data Deleted successfully');
+            return redirect()->back()->with('success', 'User data Deleted successfully');
         }
     }
 }

@@ -66,6 +66,47 @@
             </div>
         @endif
         <div class="container">
+          <div class="row">
+            <div class="col-md-4">
+              <img src="{{ asset('images/'.$user->image) }}" height="400px" width="300px">
+            </div>
+            <div class="col-md-8">
+              <ul class="list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Name
+                  <span class="">{{ $user->first_name }} {{ $user->last_name }} {{ $user->middle_name }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Date of Birth
+                  <span class="">{{ $user->age }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Gender
+                  <span class="">{{ $user->gender }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Phone Number
+                  <span class="">{{ $user->phone_number }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Email
+                  <span class="">{{ $user->email ?? 'nill'}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  State of Origin
+                  <span class="">{{ $user->state->state }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  LGA
+                  <span class="">{{ $user->local_govt->name }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Current Address
+                  <span class="">{{ $user->address }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
             @yield('content')
         </div>
        <script type="text/javascript">

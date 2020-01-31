@@ -1,10 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Home')
-@section('breadcrumb_title', 'Criminals')
+@section('breadcrumb_title', 'Cases')
 @section('content')
-<br>
-<h3>Criminal Records</h3>
-<br>
+<h3>Records</h3>
 <div class="container">
 	<a href="{{ route('user.create') }}" class="float-left btn btn-outline-info mb-4">Create</a>
 

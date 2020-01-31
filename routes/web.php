@@ -11,13 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/home', 'HomeController@home');
-Route::get('/about_us', function(){
-	return view('about_us');
-});
+Route::get('/', 'UserController@index');
+
 
 Route::prefix('states')->group(function () {
     Route::get('create', 'StateController@create');
@@ -27,3 +22,9 @@ Route::prefix('states')->group(function () {
     Route::get('/cities/{state_id}', 'CityController@state_cities');
 });
 Route::resource('user', 'UserController');
+Route::post('case/{user_id}', 'UserCriminalCaseController@store')->name('case.save');
+Route::get('case/{user_id}', 'UserCriminalCaseController@create')->name('case.create');
+Route::get('case/{user_id}/{id}/edit', 'UserCriminalCaseController@edit')->name('case.edit');
+Route::post('case/{id}/update', 'UserCriminalCaseController@update')->name('case.update');
+Route::get('case/{id}/delete', 'UserCriminalCaseController@destroy')->name('case.delete');
+Route::get('case/{user_id}/{id}/show', 'UserCriminalCaseController@show')->name('case.show');
